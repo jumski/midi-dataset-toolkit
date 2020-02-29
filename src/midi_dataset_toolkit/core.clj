@@ -85,8 +85,8 @@
 (defn -main [& args]
   (if (empty? args)
     (println "Please provide path to midi file!")
-    (let [path         (first args)
-          steps-string (midi-file-to-steps-string path)]
+    (doseq [path args
+            :let [steps-string (midi-file-to-steps-string path)]]
       (println steps-string))))
 
 ; (-> "resources/c_major_scale.mid"
