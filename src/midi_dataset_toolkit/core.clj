@@ -1,5 +1,6 @@
 (ns midi-dataset-toolkit.core
-  (:require [overtone.midi.file :as midifile]))
+  (:require [overtone.midi.file :as midifile])
+  (:gen-class))
 
 (defn note-on?
   "Returns true if event is a note on"

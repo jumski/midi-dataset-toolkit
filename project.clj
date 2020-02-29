@@ -6,4 +6,9 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [overtone "0.10.6"]]
   :repl-options {:init-ns midi-dataset-toolkit.core}
-  :main midi-dataset-toolkit.core/-main)
+  :main midi-dataset-toolkit.core
+  :plugins [[lein-bin "0.3.4"]]
+  :profiles {:uberjar {:aot [midi-dataset-toolkit.core]}}
+  :bin {:name "midi2stepfile"
+        :bin-path "./bin"
+        :bootclasspath false})
