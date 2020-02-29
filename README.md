@@ -1,6 +1,6 @@
 # midi-dataset-toolkit
 
-A Clojure library designed to ... well, that part is up to you.
+Clojure library that helps with creating data sets from midi files.
 
 ## Usage
 

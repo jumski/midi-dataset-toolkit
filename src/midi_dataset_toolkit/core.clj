@@ -25,8 +25,3 @@
     (group-by-timestamp)
     (sort #(< (first %1) (first %2)))
     (map count))
-
-; (->> (all-ns)
-;      (map ns-name)
-;      (map name)
-;      (filter #(clojure.string/includes? % "overtone")))
