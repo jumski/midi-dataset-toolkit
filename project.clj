@@ -5,4 +5,5 @@
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [overtone "0.10.6"]]
-  :repl-options {:init-ns midi-dataset-toolkit.core})
+  :repl-options {:init-ns midi-dataset-toolkit.core}
+  :main midi-dataset-toolkit.core/-main)
