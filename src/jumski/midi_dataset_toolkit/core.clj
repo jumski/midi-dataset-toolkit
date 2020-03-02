@@ -8,5 +8,5 @@
   (if (empty? args)
     (println "Please provide path to midi file or files!")
     (doseq [path args
-            :let [steps-string (toolkit/midi-file-to-steps-string path)]]
+            :let [steps-string (toolkit/midi-file->steps-stream path)]]
       (println steps-string))))
