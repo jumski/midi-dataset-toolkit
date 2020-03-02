@@ -1,6 +1,8 @@
 (ns jumski.midi-dataset-toolkit.toolkit
   (:require [overtone.midi.file :as midifile]))
 
+;;; Private functions
+
 (defn- note-on?
   "Returns true if event is a note on"
   [event]
@@ -40,8 +42,8 @@
 
 (defn- convert-to-steps
   "Returns list of lists, each sublist containing :note values for all events
-   occuring at the same :timestamp. Outer list is sorted by :timestamp,
-   lower first."
+  occuring at the same :timestamp. Outer list is sorted by :timestamp,
+  lower first."
   [note-on-events]
   (->> note-on-events
       (group-by-timestamp)
@@ -51,14 +53,14 @@
 
 (defn- notes-to-bitmask
   "Returns 128-chars long string of 0s and 1s, representing all possible notes
-   that should play at given step"
+  that should play at given step"
   [notes]
   (let [bitmask (vec (repeat 128 false))]
     (reduce #(assoc %1 %2 true) bitmask notes)))
 
 (defn- bitmask-to-bitstring
   "Returns string of 0s and 1s, composed from bitmask in reverse order,
-   1s correspond to true values and 0s to false values from bitmask."
+  1s correspond to true values and 0s to false values from bitmask."
   [bitmask]
   (let [bool-to-str {false "0" true "1"}
         str-bitmask (map bool-to-str (reverse bitmask))]
@@ -66,17 +68,19 @@
 
 (defn- notes-to-bitstring-steps
   "Returns list of bitstrings, each representing one step with all notes,
-   where 1s correspond to note being played at this step and 0s to notes being off.
-   Bitstring is encoded in little-endian order (least significant bit is on the right)."
+  where 1s correspond to note being played at this step and 0s to notes being off.
+  Bitstring is encoded in little-endian order (least significant bit is on the right)."
   [notes]
   (->> notes
     (convert-to-steps)
     (map notes-to-bitmask)
     (map bitmask-to-bitstring)))
 
+;;; Public functions
+
 (defn midi-file-to-steps-string
   "Returns string representing steps composed of bitstrings based on notes
-   read from midi file at path."
+  read from midi file at path."
   [path]
   (->> (read-note-ons-from-file path)
     (notes-to-bitstring-steps)
