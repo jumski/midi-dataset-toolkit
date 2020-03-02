@@ -14,15 +14,9 @@
   [event]
   (select-keys event [:timestamp :note]))
 
-(defn- read-note-ons-from-file
-  "Returns a list of events, flattened from all tracks in midi path from path"
+(defn- read-midi-tracks-from-path
+  "Returns a list of tracks, each containing list of events."
   [path]
-  (->> (midifile/midi-file path)
-      (:tracks)
-      (map :events)
-      (flatten)
-      (filter note-on?)
-      (map simplify-event)))
 
 (defn- group-by-timestamp
   "Returns map of timestamp to list of events at given timestamp"
@@ -78,11 +72,46 @@
 
 ;;; Public functions
 
+(defn- events-to-steps-string
+  [events]
+  (->> events
+      (println)
+      (map (juxt :timestamp :note))
+      (group-by first)))
+
 (defn midi-file-to-steps-string
   "Returns string representing steps composed of bitstrings based on notes
   read from midi file at path."
   [path]
-  (->> (read-note-ons-from-file path)
-    (notes-to-bitstring-steps)
-    (clojure.string/join "\n")))
+  (->> (midifile/midi-file path)
+    (:tracks)
+    (first)
+    ; (map :events)
+    ; (map events-to-steps-string)
+    ; (filter (complement empty?))
+    ; (take 1)
+    ; (map #(map simplify-event))
+    ))
+    ; ; (map simplify-event)))
+    ; (map #(notes-to-bitstring-steps))
+    ; (clojure.string/join "\n")))
+
+(let [xs [{:b [1 2 3]}
+          {}]]
+  (into {}
+        (for [{:keys [a b]} xs] [a b])))
+(into {} identity [[1 2] [1 3]])
+
+(let [{a :b} {:b "XXX"}] a)
+(let [{:keys [a b]} {:a "A" :b "B"}] [a b])
+
+(let [midi (midifile/midi-file "resources/c_major_scale.mid")
+      tracks (:tracks midi)
+      track (nth tracks 1)
+      events (:events track)
+      note-ons (filter note-on? events)
+      times-and-notes (map (juxt :timestamp :note) note-ons)
+      times-to-events (group-by first times-and-notes)
+      times-to-notes (for [[k v] times-to-events] [k (vec (map last v))])]
+  (sort-by first times-to-notes))
 
