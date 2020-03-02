@@ -3,10 +3,14 @@
 Clojure library that helps with creating data sets from midi files.
 
 * only intereseted in midi note on events
-* processes those events them per track
-* produces multiline string of 0s and 1s
-* each line represents a single step of note on events, each `1` representing note that plays at this step (this covers chords)
+* processes those events per track
+* produces multiline string of 0s and 1s on stdout
+* each line represents a single step of note on events
+* each "step" is notes playing at the same timestamp
+* notes that plays at given step are encoded as `1` and all other are `0` (this allows for encoding chords)
 * each line has 128 characters, which is a binary number, [little endian encoded](https://en.wikipedia.org/wiki/Endianness#Little-endian), which means bit 0 is on the right and bit 127 is on the left
+* each bit corresponds to [midi note number](http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html#BMA1_3), from 0 to 127
+* if bit is `1`, the note plays at given step, otherwise it is silent
 
 ## Usage
 
