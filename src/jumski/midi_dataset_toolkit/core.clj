@@ -1,4 +1,4 @@
-(ns midi-dataset-toolkit.core
+(ns jumski.midi-dataset-toolkit.core
   (:require [overtone.midi.file :as midifile])
   (:gen-class))
 

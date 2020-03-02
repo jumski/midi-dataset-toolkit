@@ -1,4 +1,4 @@
-# midi-dataset-toolkit
+# jumski.midi-dataset-toolkit
 
 Clojure library that helps with creating data sets from midi files.
 

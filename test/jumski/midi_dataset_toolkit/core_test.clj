@@ -1,6 +1,6 @@
-(ns midi-dataset-toolkit.core-test
+(ns jumski.midi-dataset-toolkit.core-test
   (:require [clojure.test :refer :all]
-            [midi-dataset-toolkit.core :refer :all]))
+            [jumski.midi-dataset-toolkit.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
