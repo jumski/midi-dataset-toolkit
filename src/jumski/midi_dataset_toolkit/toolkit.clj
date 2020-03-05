@@ -24,7 +24,9 @@
         str-bitmask (map bool-to-str (reverse bitmask))]
     (clojure.string/join str-bitmask)))
 
-(defn- events->steps-stream
+;;; Public functions
+
+(defn events->steps
   "Converts list of events to multiline string of steps
   Takes list of hashes (from `overtone.midi.file`) from `:events` for some `:track`
   and converts it to multiline string of 0s and 1s. Each line is 128 chars long
@@ -41,14 +43,12 @@
          (map bitmask-to-bitstring)
          (clojure.string/join "\n"))))
 
-;;; Public functions
-
 (defn midi->steps
   "Loads midi file and outputs one steps-stream concatenating step-streams for each track."
   [path]
   (->> (midifile/midi-file path)
       (:tracks)
       (map :events)
-      (map events->steps-stream)
+      (map events->steps)
       (filter (complement empty?))
       (clojure.string/join "\n")))
