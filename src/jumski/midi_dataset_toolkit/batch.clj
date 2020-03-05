@@ -35,10 +35,22 @@
             :let [opath (steps-file-path path idx)]]
       (spit opath steps))))
 
+(defn mididir->steps-files!
+  [dir]
+  (doseq [midifile (find-midis dir)
+          :let [midipath (.getPath midifile)]]
+    (println (str "Converting " midipath))
+    (midifile->steps-files! midipath)))
+
 (comment
   (def dub_midis "/home/jumski/Documents/midis/Dub_MIDIRip")
   (def c_major_scale "resources/c_major_scale.mid")
 
   (midifile->steps-files! c_major_scale)
+
+  (doseq [midifile (find-midis dub_midis)
+          :let [midipath (.getPath midifile)]]
+    (println (str "Converting " midipath))
+    (midifile->steps-files! midipath))
 )
 
