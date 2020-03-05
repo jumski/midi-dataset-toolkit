@@ -43,7 +43,7 @@
 
 ;;; Public functions
 
-(defn midi-file->steps-stream
+(defn midi->steps
   "Loads midi file and outputs one steps-stream concatenating step-streams for each track."
   [path]
   (->> (midifile/midi-file path)
