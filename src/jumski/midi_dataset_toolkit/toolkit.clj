@@ -26,6 +26,16 @@
 
 ;;; Public functions
 
+(defn note-on-tracks
+  "Returns only tracks that have `note-on?` events."
+  [{tracks :tracks}]
+  (filter track-has-note-ons? tracks))
+
+(defn track-has-note-ons?
+  "Returns true if any of given track's events matches `midi-on?`."
+  [{events :events}]
+  (some note-on? events))
+
 (defn events->steps
   "Converts list of events to multiline string of steps
   Takes list of hashes (from `overtone.midi.file`) from `:events` for some `:track`
@@ -52,3 +62,14 @@
       (map events->steps)
       (filter (complement empty?))
       (clojure.string/join "\n")))
+
+(comment
+        (let [chord  "resources/c_major_chord_4th_octave_60_64_67.mid"
+              scale  "resources/c_major_scale.mid"
+              single "resources/single_note_c4.mid"]
+          (->> (midifile/midi-file single)
+               (note-on-tracks)
+               ))
+
+
+         )

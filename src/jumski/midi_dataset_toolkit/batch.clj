@@ -1,5 +1,6 @@
 (ns jumski.midi-dataset-toolkit.batch
-  (:require [overtone.midi.file :as midifile]))
+  (:require [overtone.midi.file :as midifile]
+            [jumski.midi-dataset-toolkit.toolkit :as toolkit]))
 
 (def MIDIFILE_REGEX #".*\.midi?$")
 
@@ -11,24 +12,33 @@
          (filter #(.isFile %))
          (filter #(re-matches MIDIFILE_REGEX (.getPath %))))))
 
+(defn steps-file-path
+  "Returns path like midipath but with `.steps` extension and added idx as suffix."
+  [midipath idx]
+  (let [fname (clojure.string/replace midipath #"\.mid$" "")
+        suff  (str ".part_" (format "%02d" idx))
+        ext   ".steps"]
+    (str fname suff ext)))
+
+(defn midifile->steps-files!
+  "Saves each track from midifile as separate steps file.
+  Each step file will be saved in same directory that original midi file,
+  will have same name as original midi file but with numeric suffix
+  in form of track number (`_1`) and extension changed to `.steps`."
+  [path]
+  (let [idx-steps (->> (midifile/midi-file path)
+                       (toolkit/note-on-tracks)
+                       (map :events)
+                       (map toolkit/events->steps)
+                       (map-indexed list))]
+    (doseq [[idx steps] idx-steps
+            :let [opath (steps-file-path path idx)]]
+      (spit opath steps))))
 
 (comment
   (def dub_midis "/home/jumski/Documents/midis/Dub_MIDIRip")
-  (def resources_midi "resources/")
+  (def c_major_scale "resources/c_major_scale.mid")
 
-  (->> (find-midis resources_midi)
-       (take 1)
-       (map #(.getPath %))
-       (map midifile/midi-file)
-       (first)
-       (:tracks)
-       (last)
-       (:events)
-       (filter :velocity)
-       ; (map :channel)
-       ; (map keys)
-       ; (flatten)
-       ; (set)
-       (println))
+  (midifile->steps-files! c_major_scale)
 )
 
