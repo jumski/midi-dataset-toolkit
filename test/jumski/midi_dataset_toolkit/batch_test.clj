@@ -1,6 +1,6 @@
 (ns jumski.midi-dataset-toolkit.batch-test
   (:require [clojure.test :refer :all]
-            [jumski.midi-dataset-toolkit.toolkit :as toolkit]
+            [jumski.midi-dataset-toolkit.midi :as midi]
             [jumski.midi-dataset-toolkit.batch :as batch]))
 
 (deftest smoke-test

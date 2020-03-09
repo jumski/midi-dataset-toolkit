@@ -1,6 +1,6 @@
 (ns jumski.midi-dataset-toolkit.batch
   (:require [overtone.midi.file :as midifile]
-            [jumski.midi-dataset-toolkit.toolkit :as toolkit]))
+            [jumski.midi-dataset-toolkit.midi :as midi]))
 
 (def MIDIFILE_REGEX #"(?i).*\.midi?$")
 
@@ -26,9 +26,9 @@
   in form of track number (`_1`) and extension changed to `.steps`."
   [path]
   (let [idx-steps (->> (midifile/midi-file path)
-                       (toolkit/note-on-tracks)
+                       (midi/note-on-tracks)
                        (map :events)
-                       (map toolkit/events->steps)
+                       (map midi/events->steps)
                        (map-indexed list))]
     (doseq [[idx steps] idx-steps
             :let [opath (steps-file-path path idx)]]

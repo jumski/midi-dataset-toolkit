@@ -1,4 +1,4 @@
-(ns jumski.midi-dataset-toolkit.toolkit
+(ns jumski.midi-dataset-toolkit.midi
   (:require [overtone.midi.file :as midifile]))
 
 ;;; Private functions
