@@ -2,7 +2,7 @@
   (:require [overtone.midi.file :as midifile]
             [jumski.midi-dataset-toolkit.toolkit :as toolkit]))
 
-(def MIDIFILE_REGEX #".*\.midi?$")
+(def MIDIFILE_REGEX #"(?i).*\.midi?$")
 
 (defn- find-midis
   "Returns `file-seq` of all `*.mid{,i}` files in given `dir`."
@@ -15,10 +15,9 @@
 (defn steps-file-path
   "Returns path like midipath but with `.steps` extension and added idx as suffix."
   [midipath idx]
-  (let [fname (clojure.string/replace midipath #"\.mid$" "")
-        suff  (str ".part_" (format "%02d" idx))
-        ext   ".steps"]
-    (str fname suff ext)))
+  (str midipath
+       (str ".part_" (format "%02d" idx))
+       ".steps"))
 
 (defn midifile->steps-files!
   "Saves each track from midifile as separate steps file.
