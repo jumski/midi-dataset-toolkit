@@ -1,13 +1,19 @@
 (ns jumski.midi-dataset-toolkit.batch-test
-  (:require [clojure.test :refer :all]
+  (:require [midje.sweet :refer :all]
             [jumski.midi-dataset-toolkit.midi :as midi]
             [jumski.midi-dataset-toolkit.batch :as batch]))
 
-(deftest smoke-test
-  (testing "steps-file-path produces proper path"
-    (is (= (batch/steps-file-path "some/path/to/midi.file.MID" 7)
-           "some/path/to/midi.file.MID.part_07.steps"))
-    (is (= (batch/steps-file-path "some/path/to/midi.file.mid" 7)
-           "some/path/to/midi.file.mid.part_07.steps"))
-    (is (= (batch/steps-file-path "some/path/to/midi.file.midi" 7)
-          "some/path/to/midi.file.midi.part_07.steps"))))
+(facts
+  "about producing steps file pathnames from midi file paths"
+
+  (fact
+    (batch/steps-file-path "some/path/to/midi.file.MID" 7)
+    => "some/path/to/midi.file.MID.part_07.stepsxxx")
+
+  (fact
+    (batch/steps-file-path "some/path/to/midi.file.mid" 7)
+    => "some/path/to/midi.file.mid.part_07.steps")
+
+  (fact
+    (batch/steps-file-path "some/path/to/midi.file.midi" 7)
+    => "some/path/to/midi.file.midi.part_07.steps"))

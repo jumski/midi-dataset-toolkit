@@ -1,5 +1,5 @@
 (ns jumski.midi-dataset-toolkit.midi-test
-  (:require [clojure.test :refer :all]
+  (:require [midje.sweet :refer :all]
             [jumski.midi-dataset-toolkit.midi :as midi]))
 
 (def c_major_scale_data
@@ -20,8 +20,7 @@
                "00000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000"]]
     (clojure.string/join "\n" lines)))
 
-(deftest smoke-test
-  (testing "midi-file-to-steps-string converts Cmajor scale properly"
-    (let [path   "resources/c_major_scale.mid"
-          output (midi/midi->steps path)]
-      (is (= output c_major_scale_data)))))
+(facts
+  "about producting outputs for simple files"
+  (fact
+    (midi/midi->steps "resources/c_major_scale.mid") => c_major_scale_data))

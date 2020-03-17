@@ -8,7 +8,9 @@
   :repl-options {:init-ns jumski.midi-dataset-toolkit.core}
   :main jumski.midi-dataset-toolkit.core
   :plugins [[lein-bin "0.3.4"]]
-  :profiles {:uberjar {:aot [jumski.midi-dataset-toolkit.core]}}
+  :profiles {:uberjar {:aot [jumski.midi-dataset-toolkit.core]}
+             :dev {:plugins [[lein-midje "3.2.1"]]
+                   :dependencies [[midje/midje "1.9.9"]]}}
   :bin {:name "mididir2stepsfiles"
         :bin-path "./bin"
         :bootclasspath false})

@@ -65,6 +65,10 @@ midi2stepfile some/path/to/*.mid
 
 Each track from each file will be printed to stdout encoded as `0`s and `1`s.
 
+## Testing
+
+Run tests with `lein midje`.
+
 ## Building
 
 ```bash
