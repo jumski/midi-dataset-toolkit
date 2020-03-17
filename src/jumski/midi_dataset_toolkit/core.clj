@@ -1,12 +1,10 @@
 (ns jumski.midi-dataset-toolkit.core
-  (:require [jumski.midi-dataset-toolkit.toolkit :as toolkit])
+  (:require [jumski.midi-dataset-toolkit.batch :as batch])
   (:gen-class))
 
 (defn -main
   "Runs `midi-file-to-steps-string` for each `arg` of `args` and prints to stdout"
-  [& args]
-  (if (empty? args)
-    (println "Please provide path to midi file or files!")
-    (doseq [path args
-            :let [steps-string (toolkit/midi->steps path)]]
-      (println steps-string))))
+  [mididir]
+  (if (empty? mididir)
+    (println "Please provide path to directory containing midi files!")
+    (batch/mididir->steps-files! mididir)))

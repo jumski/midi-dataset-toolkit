@@ -9,6 +9,6 @@
   :main jumski.midi-dataset-toolkit.core
   :plugins [[lein-bin "0.3.4"]]
   :profiles {:uberjar {:aot [jumski.midi-dataset-toolkit.core]}}
-  :bin {:name "midi2stepfile"
+  :bin {:name "mididir2stepsfiles"
         :bin-path "./bin"
         :bootclasspath false})
