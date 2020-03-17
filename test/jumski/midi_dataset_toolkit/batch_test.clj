@@ -1,38 +1,7 @@
 (ns jumski.midi-dataset-toolkit.batch-test
   (:require [midje.sweet :refer :all]
-            [jumski.midi-dataset-toolkit.midi :as midi]
-            [jumski.midi-dataset-toolkit.batch :as b]
-            [clojure.java.io]))
-
-;; HELPERS
-
-(defn- find-files-by-pattern
-  "Returns `file-seq` of all files with names matching pattern."
-  [dir patt]
-  (let [dir (clojure.java.io/file dir)]
-    (->> (file-seq dir)
-         (filter #(.isFile %))
-         (filter #(re-matches patt (.getPath %))))))
-
-(def ^:private fixtures-root "test/resources")
-
-(defn- fixture-path
-  "Joins parts by /, prefixing by `fixtures-root`.
-  Symbols are converted to their names."
-  [& parts]
-  (let [parts (map name parts)]
-    (clojure.string/join "/" (cons fixtures-root parts))))
-
-(defn- clean-fixture-dir
-  "Removes all *.steps files in dir."
-  [dirname]
-  (let [dir (fixture-path dirname)
-        patt #"(?i).*\.steps$"]
-    (doseq [f (find-files-by-pattern dir patt)]
-      (println "deleting" (.getPath f))
-      (.delete f))))
-
-;; TESTS
+            [test-helper :refer :all]
+            [jumski.midi-dataset-toolkit.batch :as b]))
 
 (facts
   "mididir->steps-files! uses midifile->steps-files!"
