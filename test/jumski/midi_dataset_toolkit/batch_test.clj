@@ -8,7 +8,7 @@
 
   (fact
     (batch/steps-file-path "some/path/to/midi.file.MID" 7)
-    => "some/path/to/midi.file.MID.part_07.stepsxxx")
+    => "some/path/to/midi.file.MID.part_07.steps")
 
   (fact
     (batch/steps-file-path "some/path/to/midi.file.mid" 7)
