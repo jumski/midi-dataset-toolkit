@@ -1,9 +1,10 @@
 (ns jumski.midi-dataset-toolkit.midi
-  (:require [overtone.midi.file :as midifile]))
+  (:require [overtone.midi.file :as midifile]
+            [jumski.midi-dataset-toolkit.quantization :as q]))
 
 ;;; Private functions
 
-(defn- note-on?
+(defn note-on?
   "Returns true if event is a note on"
   [event]
   (and (= :note-on (:command event))
@@ -45,7 +46,8 @@
   [events]
   (let [note-ons (filter note-on? events)
         times-and-notes (map (juxt :timestamp :note) note-ons)
-        times-to-events (group-by first times-and-notes)
+        group-fn (comp (partial q/quantize 100) first)
+        times-to-events (group-by group-fn times-and-notes)
         times-to-notes (for [[k v] times-to-events] [k (vec (map last v))])]
     (->> (sort-by first times-to-notes)
          (map last)

@@ -33,7 +33,9 @@
 (->> (inspect-events (:events track))
      flatten
      distinct)
-(->> (:events track)
+(->> (nth (:tracks midifile) 15)
+     :events
+     (filter midi/note-on?)
      (map :timestamp)
      (group-by (partial quantization/quantize 100))
      (sort-by first))
