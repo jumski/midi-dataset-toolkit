@@ -1,6 +1,6 @@
 (ns jumski.midi-dataset-toolkit.batch-test
   (:require [midje.sweet :refer :all]
-            [test-helper :refer :all]
+            [test-helper :refer [fixture-path load-trimmed-fixture clean-fixture-dir]]
             [jumski.midi-dataset-toolkit.batch :as b]))
 
 (facts
@@ -15,11 +15,12 @@
                      (after :facts (clean-fixture-dir :real-midis))]
   (fact
     "midifile->steps-files! properly converts"
-    (let [midipath (fixture-path :real-midis "c_major_scale.mid")
-          steppath (fixture-path :real-midis "c_major_scale.mid.part_00.steps")
-          expected (fixture-path :real-midis "c_major_scale.mid.part_00.expected")]
+    (let [midipath   (fixture-path :real-midis "c_major_scale.mid")
+          actual-f   "c_major_scale.mid.part_00.steps"
+          expected-f "c_major_scale.mid.part_00.expected"]
       (b/midifile->steps-files! midipath)
-      (slurp steppath) => (slurp expected))))
+      (load-trimmed-fixture :real-midis actual-f)
+      => (load-trimmed-fixture :real-midis expected-f))))
 
 (facts
   "proper path building for steps files"
