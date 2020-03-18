@@ -20,7 +20,15 @@
                "00000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000"]]
     (clojure.string/join "\n" lines)))
 
-(facts
+(def c_major_chord_4th_octave_60_64_67
+  "00000000000000000000000000000000000000000000000000000000000010010001000000000000000000000000000000000000000000000000000000000000")
+
+
+(fact
   "about producting outputs for simple files"
-  (fact
-    (midi/midi->steps "resources/c_major_scale.mid") => c_major_scale_data))
+  (midi/midi->steps "resources/c_major_scale.mid") => c_major_scale_data)
+
+(fact
+  "about producting outputs for chords"
+  (midi/midi->steps "resources/c_major_chord_4th_octave_60_64_67.mid")
+  => c_major_chord_4th_octave_60_64_67)
