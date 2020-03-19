@@ -64,13 +64,3 @@
       (map events->steps)
       (filter (complement empty?))
       (clojure.string/join "\n")))
-
-(comment
-  (let [chord  "resources/c_major_chord_4th_octave_60_64_67.mid"
-        scale  "resources/c_major_scale.mid"
-        single "resources/single_note_c4.mid"]
-    (->> (midifile/midi-file chord)
-         (note-on-tracks)
-         (map :events)
-         (map events->steps)))
-  )
