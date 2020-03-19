@@ -20,6 +20,18 @@
   (let [parts (map name parts)]
     (clojure.string/join "/" (cons fixtures-root parts))))
 
+(defn load-fixture
+  "Slurps file from path build by `fixture-path`."
+  [& path-parts]
+  (-> (slurp (apply fixture-path path-parts))
+      clojure.string/trim))
+
+(defn load-trimmed-fixture
+  "Loads fixture via `load-fixture` and trims whitespaces from both ends."
+  [& path-parts]
+  (-> (apply load-fixture path-parts)
+      clojure.string/trim))
+
 (defn clean-fixture-dir
   "Removes all *.steps files in dir."
   [dirname]

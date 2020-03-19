@@ -1,9 +1,10 @@
 (ns jumski.midi-dataset-toolkit.midi
-  (:require [overtone.midi.file :as midifile]))
+  (:require [overtone.midi.file :as midifile]
+            [jumski.midi-dataset-toolkit.quantization :as q]))
 
 ;;; Private functions
 
-(defn- note-on?
+(defn note-on?
   "Returns true if event is a note on"
   [event]
   (and (= :note-on (:command event))
@@ -24,6 +25,13 @@
         str-bitmask (map bool-to-str (reverse bitmask))]
     (clojure.string/join str-bitmask)))
 
+(defn- events->bitstring [events]
+  (->> events
+       (map :note)
+       (filter identity)
+       notes-to-bitmask
+       bitmask-to-bitstring))
+
 ;;; Public functions
 
 (defn track-has-note-ons?
@@ -43,40 +51,10 @@
   and represents a binary number encoded in little endian, where 1s are notes
   that are playing for given step."
   [events]
-  (let [note-ons (filter note-on? events)
-        times-and-notes (map (juxt :timestamp :note) note-ons)
-        times-to-events (group-by first times-and-notes)
-        times-to-notes (for [[k v] times-to-events] [k (vec (map last v))])]
-    (->> (sort-by first times-to-notes)
-         (map last)
-         (map notes-to-bitmask)
-         (map bitmask-to-bitstring)
-         (clojure.string/join "\n"))))
-
-(defn midi->steps
-  "Loads midi file and outputs one steps-stream concatenating step-streams for each track."
-  [path]
-  (->> (midifile/midi-file path)
-      (:tracks)
-      (map :events)
-      (map events->steps)
-      (filter (complement empty?))
-      (clojure.string/join "\n")))
-
-; DEPRECATED
-(defn- multiple-midi->steps-on-stdout!
-  "Writes all tracks of steps for each path on stdout."
-  [paths]
-  (doseq [path paths
-          :let [steps-string (midi->steps path)]]
-    (println steps-string)))
-
-
-(comment
-  (let [chord  "resources/c_major_chord_4th_octave_60_64_67.mid"
-        scale  "resources/c_major_scale.mid"
-        single "resources/single_note_c4.mid"]
-    (->> (midifile/midi-file single)
-         (note-on-tracks)
-         ))
-  )
+  (letfn [(group-fn [{t :timestamp}] (q/quantize 100 t))]
+    (->> events
+      (group-by group-fn)
+      (sort-by first)
+      (map last)
+      (map events->bitstring)
+      (clojure.string/join "\n"))))
