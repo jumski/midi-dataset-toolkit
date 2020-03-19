@@ -30,6 +30,7 @@
   (let [idx-steps (->> (midifile/midi-file path)
                        (midi/note-on-tracks)
                        (map :events)
+                       (map #(filter midi/note-on? %))
                        (map midi/events->steps)
                        (map-indexed list))]
     (doseq [[idx steps] idx-steps

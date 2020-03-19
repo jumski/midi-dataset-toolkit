@@ -55,8 +55,8 @@
   [events]
   (letfn [(group-fn [{t :timestamp}] (q/quantize 100 t))]
     (->> events
-      (sort-by :timestamp)
       (group-by group-fn)
+      (sort-by first)
       (map last)
       (map events->bitstring)
       (clojure.string/join "\n"))))
