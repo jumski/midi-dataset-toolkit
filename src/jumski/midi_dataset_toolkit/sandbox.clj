@@ -41,4 +41,57 @@
      (sort-by first))
 
 
+;; NEW IDEAS FOR PROCESSIGN PIPELINE
 
+; midifile -> midi file on disk
+; midi -> midi data structure created by loading midifile
+; track -> single stream of events from given, midi has mutliple tracks
+; step -> collection of notes that are marked as playing
+; stepfile -> file containing all steps converted to binary representation
+(comment
+
+; (defrecord Track [path events])
+
+; (defn write-stepfile! [{path :path steps :steps}]
+;   (->> steps
+
+
+(defn track->binsteps [{idx :idx path :path notes :notes}]
+  {:path (batch/steps-file-path path idx)
+   :steps (->> notes
+               midi/notes-to-bitmask
+               midi/bitmask-to-bitstring)})
+
+(defn load-tracks
+  "Returns sequence of Track's for given midifile at path
+  Skips any tracks that does not have any note-ons."
+  [path]
+  (let [{tracks :tracks} (overtone.midi.file/midi-file path)]
+    (for [[idx {events :events}] (map-indexed list tracks)
+          :when (some midi/note-on? events)
+          :let [note-ons (->> events
+                             (filter midi/note-on?)
+                             (map #(select-keys % [:timestamp :note])))]]
+      {:idx idx :path path :note-ons note-ons})))
+
+(defn quantize-track [{note-ons :note-ons :as track}]
+  (let [quantized (->> note-ons
+                       (map (juxt :timestamp :note))
+                       (group-by #(quantization/quantize 100 (first %)))
+                       (sort-by first))
+        simplified (for [[_ [_ [_ note]]] quantized] note)]
+    simplified))
+
+(->> (load-tracks midipath)
+     first
+     ; quantize-track
+     #_track->binsteps)
+
+(->> (find-midi-paths "path/to/folder")
+     (mapcat load-tracks)
+     (map quantize-track)
+     (map track->stepfile)
+     (map write-stepfile!))
+
+
+) ;(comment)

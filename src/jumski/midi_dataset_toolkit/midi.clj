@@ -1,6 +1,5 @@
 (ns jumski.midi-dataset-toolkit.midi
-  (:require [overtone.midi.file :as midifile]
-            [jumski.midi-dataset-toolkit.quantization :as q]))
+  (:require [jumski.midi-dataset-toolkit.quantization :as q]))
 
 ;;; Private functions
 
@@ -10,14 +9,14 @@
   (and (= :note-on (:command event))
        (not (nil? (:note event)))))
 
-(defn- notes-to-bitmask
+(defn notes-to-bitmask
   "Returns 128-chars long string of 0s and 1s, representing all possible notes
   that should play at given step"
   [notes]
   (let [bitmask (vec (repeat 128 false))]
     (reduce #(assoc %1 %2 true) bitmask notes)))
 
-(defn- bitmask-to-bitstring
+(defn bitmask-to-bitstring
   "Returns string of 0s and 1s, composed from bitmask in reverse order,
   1s correspond to true values and 0s to false values from bitmask."
   [bitmask]
