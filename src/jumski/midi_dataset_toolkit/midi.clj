@@ -15,8 +15,6 @@
   that should play at given step"
   [notes]
   (let [bitmask (vec (repeat 128 false))]
-    ; (println "bitmask=" bitmask)
-    ; (println "notes=" notes)
     (reduce #(assoc %1 %2 true) bitmask notes)))
 
 (defn- bitmask-to-bitstring
