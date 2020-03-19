@@ -15,6 +15,8 @@
   that should play at given step"
   [notes]
   (let [bitmask (vec (repeat 128 false))]
+    ; (println "bitmask=" bitmask)
+    ; (println "notes=" notes)
     (reduce #(assoc %1 %2 true) bitmask notes)))
 
 (defn- bitmask-to-bitstring
@@ -24,6 +26,13 @@
   (let [bool-to-str {false "0" true "1"}
         str-bitmask (map bool-to-str (reverse bitmask))]
     (clojure.string/join str-bitmask)))
+
+(defn- events->bitstring [events]
+  (->> events
+       (map :note)
+       (filter identity)
+       notes-to-bitmask
+       bitmask-to-bitstring))
 
 ;;; Public functions
 
@@ -44,13 +53,10 @@
   and represents a binary number encoded in little endian, where 1s are notes
   that are playing for given step."
   [events]
-  (let [note-ons (filter note-on? events)
-        times-and-notes (map (juxt :timestamp :note) note-ons)
-        group-fn (comp (partial q/quantize 100) first)
-        times-to-events (group-by group-fn times-and-notes)
-        times-to-notes (for [[k v] times-to-events] [k (vec (map last v))])]
-    (->> (sort-by first times-to-notes)
-         (map last)
-         (map notes-to-bitmask)
-         (map bitmask-to-bitstring)
-         (clojure.string/join "\n"))))
+  (letfn [(group-fn [{t :timestamp}] (q/quantize 100 t))]
+    (->> events
+      (sort-by :timestamp)
+      (group-by group-fn)
+      (map last)
+      (map events->bitstring)
+      (clojure.string/join "\n"))))
