@@ -54,13 +54,3 @@
          (map notes-to-bitmask)
          (map bitmask-to-bitstring)
          (clojure.string/join "\n"))))
-
-(defn midi->steps
-  "Loads midi file and outputs one steps-stream concatenating step-streams for each track."
-  [path]
-  (->> (midifile/midi-file path)
-      (:tracks)
-      (map :events)
-      (map events->steps)
-      (filter (complement empty?))
-      (clojure.string/join "\n")))
