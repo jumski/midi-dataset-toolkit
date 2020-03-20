@@ -26,7 +26,9 @@
 (defn process-all-midi-files-in-dir!
   "Finds all midi files, extract note-on tracks from them,
   quantizes each track and writes to suffixed file as stepstring."
-  [dir]
+  ([dir] (process-all-midi-files-in-dir! dir (fn [])))
+  ([dir progress-fn]
   (doseq [track (sequence processing/midifile->stepstrings (files-in-dir-seq dir))]
-    (spit-binarized-track! track)))
+    (progress-fn track)
+    (spit-binarized-track! track))))
 
