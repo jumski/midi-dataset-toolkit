@@ -100,7 +100,8 @@
   (comp only-midi-files
         (mapcat load-tracks)
         (map quantize-track)
-        (map steppize-track)))
+        (map steppize-track)
+        (map binarize-track)))
 
 ; {33100 [{:timestamp 33100, :note 72} {:timestamp 33100, :note 69} {:timestamp 33100, :note 77}],
 ;  27400 [{:timestamp 27400, :note 72} {:timestamp 27400, :note 69} {:timestamp 27400, :note 77}],
@@ -113,6 +114,14 @@
     {:index index
      :path path
      :steps (for [[_ notes] sorted] (map :note notes))}))
+
+(defn binarize-track
+  [{:keys [index steps path]}]
+  (let [bitsteps (map midi/notes-to-bitmask steps)
+        bitstrings (map midi/bitmask-to-bitstring bitsteps)]
+    {:index index
+     :path path
+     :stepstring (clojure.string/join "\n" bitstrings)}))
 
 ; (defn steps->stepstring
 ;   [{:keys [steps] :as ste}]
