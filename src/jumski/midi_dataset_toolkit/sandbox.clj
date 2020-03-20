@@ -96,17 +96,6 @@
     (update track :note-ons (partial map note-on-fn))))
 
 ;; working
-(def process-files
-  (comp only-midi-files
-        (mapcat load-tracks)
-        (map quantize-track)
-        (map steppize-track)
-        (map binarize-track)))
-
-; {33100 [{:timestamp 33100, :note 72} {:timestamp 33100, :note 69} {:timestamp 33100, :note 77}],
-;  27400 [{:timestamp 27400, :note 72} {:timestamp 27400, :note 69} {:timestamp 27400, :note 77}],
-;    200 [{:timestamp 31200, :note 72} {:timestamp 31200, :note 69} {:timestamp 31200, :note 77}]}
-
 (defn steppize-track
   [{:keys [index note-ons path]}]
   (let [grouped (group-by :timestamp note-ons)
@@ -115,6 +104,7 @@
      :path path
      :steps (for [[_ notes] sorted] (map :note notes))}))
 
+;; working
 (defn binarize-track
   [{:keys [index steps path]}]
   (let [bitsteps (map midi/notes-to-bitmask steps)
@@ -122,6 +112,14 @@
     {:index index
      :path path
      :stepstring (clojure.string/join "\n" bitstrings)}))
+
+;; working
+(def process-files
+  (comp only-midi-files
+        (mapcat load-tracks)
+        (map quantize-track)
+        (map steppize-track)
+        (map binarize-track)))
 
 (defn spit-binarized-track!
   [{:keys [index path stepstring]}]
