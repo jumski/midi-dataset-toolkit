@@ -74,24 +74,45 @@
                              (map #(select-keys % [:timestamp :note])))]]
       {:idx idx :path path :note-ons note-ons})))
 
-(defn quantize-track [{note-ons :note-ons :as track}]
-  (let [quantized (->> note-ons
-                       (map (juxt :timestamp :note))
-                       (group-by #(quantization/quantize 100 (first %)))
-                       (sort-by first))
-        simplified (for [[_ [_ [_ note]]] quantized] note)]
-    simplified))
+;; working
+(def only-midi-paths
+  "Transducer, filtering only paths to midi files, based on extension."
+  (let [midifile-regex #"(?i).*\.midi?$"]
+    (comp (filter #(.isFile %))
+          (filter #(re-matches midifile-regex (.getPath %)))
+          (map #(.getPath %)))))
 
-(->> (load-tracks midipath)
-     first
-     ; quantize-track
-     #_track->binsteps)
+;; working
+(defn midi-paths-seq
+  "Returns lazy sequence of midi paths (strings) in given `dir`."
+  [dir]
+  (->> (clojure.java.io/file "resources/")
+       file-seq
+       (sequence only-midi-paths)))
 
-(->> (find-midi-paths "path/to/folder")
+; (defn quantize-track [{note-ons :note-ons :as track}]
+;   (let [quantized (->> note-ons
+;                        (map (juxt :timestamp :note))
+;                        (group-by #(quantization/quantize 100 (first %)))
+;                        (sort-by first))
+;         simplified (for [[_ [_ [_ note]]] quantized] note)]
+;     simplified))
+
+(->> (midi-paths-seq "resources/")
      (mapcat load-tracks)
-     (map quantize-track)
-     (map track->stepfile)
-     (map write-stepfile!))
+     first
+     quantize-track
+
+    ; (map track->stepfile)
+    ; (map write-stepfile!))
+     )
+
+(defn quantize-track [track]
+  (let [q-fn #(quantization/quantize 100 %)
+        note-on-fn #(update % :timestamp q-fn)]
+    (update track :note-ons (partial map note-on-fn))))
+
+
 
 
 ) ;(comment)
