@@ -50,71 +50,65 @@
 ; stepfile -> file containing all steps converted to binary representation
 (comment
 
-; (defrecord Track [path events])
-
-; (defn write-stepfile! [{path :path steps :steps}]
-;   (->> steps
-
-
-(defn track->binsteps [{idx :idx path :path notes :notes}]
-  {:path (batch/steps-file-path path idx)
+;; ??????
+(defn track->binsteps [{index :index path :path notes :notes}]
+  {:path (batch/steps-file-path path index)
    :steps (->> notes
                midi/notes-to-bitmask
                midi/bitmask-to-bitstring)})
 
+;; working
 (def only-note-ons
-  "Transducer, filters only note-on? events and simplified them."
+  "Transducer, filters only note-on? events and simplifies them."
   (comp
     (filter midi/note-on?)
     (map #(select-keys % [:timestamp :note]))))
 
+;; working
 (defn load-tracks
   "Returns sequence of Track's for given midifile at path
   Skips any tracks that does not have any note-ons."
-  [path]
-  (let [{tracks :tracks} (overtone.midi.file/midi-file path)]
-    (for [[idx {events :events}] (map-indexed list tracks)
+  [midifile]
+  (let [path (.getPath midifile)
+        {tracks :tracks} (overtone.midi.file/midi-file path)]
+    (for [[index {events :events}] (map-indexed list tracks)
           :when (some midi/note-on? events)]
-      {:idx idx :path path :note-ons (sequence only-note-ons events)})))
+      {:index index :path path :note-ons (sequence only-note-ons events)})))
 
 ;; working
-(def only-midi-paths
+(def only-midi-files
   "Transducer, filtering only paths to midi files, based on extension."
   (let [midifile-regex #"(?i).*\.midi?$"]
     (comp (filter #(.isFile %))
-          (filter #(re-matches midifile-regex (.getPath %)))
-          (map #(.getPath %)))))
+          (filter #(re-matches midifile-regex (.getPath %))))))
 
 ;; working
-(defn midi-file-seq
+(defn files-in-dir-seq
   "Returns lazy sequence of midi files in given `dir`."
   [dir]
-  (->> (clojure.java.io/file "resources/") file-seq))
+  (->> (clojure.java.io/file "resources/")
+       file-seq))
 
-(def process-files
-  (comp only-midi-paths
-        (mapcat load-tracks)
-        (map quantize-track)))
-
-(->> (midi-file-seq "resources/")
-     (sequence process-files)
-     first)
-
-(->> (midi-paths-seq "resources/")
-     (mapcat load-tracks)
-     (map quantize-track)
-     first
-
-    ; (map track->stepfile)
-    ; (map write-stepfile!))
-     )
-
+;; working
 (defn quantize-track [track]
   (let [q-fn #(quantization/quantize 100 %)
         note-on-fn #(update % :timestamp q-fn)]
     (update track :note-ons (partial map note-on-fn))))
 
+;; working
+(def process-files
+  (comp only-midi-files
+        (mapcat load-tracks)
+        (map quantize-track)))
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(->> (files-in-dir-seq "resources/")
+     (sequence process-files)
+     first)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ) ;(comment)
