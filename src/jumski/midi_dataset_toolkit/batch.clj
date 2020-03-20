@@ -14,11 +14,6 @@
          (filter #(.isFile %))
          (filter #(re-matches midifile-regex (.getPath %))))))
 
-(defn steps-file-path
-  "Returns path like midipath but with `.steps` extension and added idx as suffix."
-  [midipath idx]
-  (str midipath ".part_" (format "%02d" idx) ".steps"))
-
 ;; PUBLIC
 
 (defn midifile->steps-files!
