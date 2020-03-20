@@ -41,7 +41,7 @@
      (sort-by first))
 
 
-;; NEW IDEAS FOR PROCESSIGN PIPELINE
+;; NEW IDEAS FOR PROCESSING PIPELINE
 
 ; midifile -> midi file on disk
 ; midi -> midi data structure created by loading midifile
@@ -62,17 +62,20 @@
                midi/notes-to-bitmask
                midi/bitmask-to-bitstring)})
 
+(def only-note-ons
+  "Transducer, filters only note-on? events and simplified them."
+  (comp
+    (filter midi/note-on?)
+    (map #(select-keys % [:timestamp :note]))))
+
 (defn load-tracks
   "Returns sequence of Track's for given midifile at path
   Skips any tracks that does not have any note-ons."
   [path]
   (let [{tracks :tracks} (overtone.midi.file/midi-file path)]
     (for [[idx {events :events}] (map-indexed list tracks)
-          :when (some midi/note-on? events)
-          :let [note-ons (->> events
-                             (filter midi/note-on?)
-                             (map #(select-keys % [:timestamp :note])))]]
-      {:idx idx :path path :note-ons note-ons})))
+          :when (some midi/note-on? events)]
+      {:idx idx :path path :note-ons (sequence only-note-ons events)})))
 
 ;; working
 (def only-midi-paths
@@ -83,25 +86,24 @@
           (map #(.getPath %)))))
 
 ;; working
-(defn midi-paths-seq
-  "Returns lazy sequence of midi paths (strings) in given `dir`."
+(defn midi-file-seq
+  "Returns lazy sequence of midi files in given `dir`."
   [dir]
-  (->> (clojure.java.io/file "resources/")
-       file-seq
-       (sequence only-midi-paths)))
+  (->> (clojure.java.io/file "resources/") file-seq))
 
-; (defn quantize-track [{note-ons :note-ons :as track}]
-;   (let [quantized (->> note-ons
-;                        (map (juxt :timestamp :note))
-;                        (group-by #(quantization/quantize 100 (first %)))
-;                        (sort-by first))
-;         simplified (for [[_ [_ [_ note]]] quantized] note)]
-;     simplified))
+(def process-files
+  (comp only-midi-paths
+        (mapcat load-tracks)
+        (map quantize-track)))
+
+(->> (midi-file-seq "resources/")
+     (sequence process-files)
+     first)
 
 (->> (midi-paths-seq "resources/")
      (mapcat load-tracks)
+     (map quantize-track)
      first
-     quantize-track
 
     ; (map track->stepfile)
     ; (map write-stepfile!))
