@@ -99,7 +99,24 @@
 (def process-files
   (comp only-midi-files
         (mapcat load-tracks)
-        (map quantize-track)))
+        (map quantize-track)
+        (map steppize-track)))
+
+; {33100 [{:timestamp 33100, :note 72} {:timestamp 33100, :note 69} {:timestamp 33100, :note 77}],
+;  27400 [{:timestamp 27400, :note 72} {:timestamp 27400, :note 69} {:timestamp 27400, :note 77}],
+;    200 [{:timestamp 31200, :note 72} {:timestamp 31200, :note 69} {:timestamp 31200, :note 77}]}
+
+(defn steppize-track
+  [{:keys [index note-ons path]}]
+  (let [grouped (group-by :timestamp note-ons)
+        sorted (sort-by first grouped)]
+    {:index index
+     :path path
+     :steps (for [[_ notes] sorted] (map :note notes))}))
+
+; (defn steps->stepstring
+;   [{:keys [steps] :as ste}]
+;   (
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
