@@ -123,9 +123,10 @@
      :path path
      :stepstring (clojure.string/join "\n" bitstrings)}))
 
-; (defn steps->stepstring
-;   [{:keys [steps] :as ste}]
-;   (
+(defn spit-binarized-track!
+  [{:keys [index path stepstring]}]
+  (let [dst-path (batch/steps-file-path path index)]
+    (spit dst-path stepstring)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -133,6 +134,10 @@
 (->> (files-in-dir-seq "resources/")
      (sequence process-files)
      first)
+
+(doseq [track (sequence process-files (files-in-dir-seq "resources/"))]
+  (spit-binarized-track! track))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
