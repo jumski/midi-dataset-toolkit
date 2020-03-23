@@ -11,6 +11,6 @@
 (defn -main
   "Runs `midi-file-to-steps-string` for each `arg` of `args` and prints to stdout"
   [dir]
-  (if (empty? dir)
-    (println "Please provide path to directory containing midi files!")
-    (file/process-all-midi-files-in-dir! dir log-track-processing)))
+  (if (seq dir)
+    (file/process-all-midi-files-in-dir! dir log-track-processing)
+    (println "Please provide path to directory containing midi files!")))
