@@ -2,15 +2,15 @@
   (:require [jumski.midi-dataset-toolkit.file :as file])
   (:gen-class))
 
-(defn log-track-processing
+(defn- logger-fn
   "Prints info about processing given track."
   [{:keys [index path]}]
   (do
     (println "Saving track" index "from" path)))
 
 (defn -main
-  "Runs `midi-file-to-steps-string` for each `arg` of `args` and prints to stdout"
+  "Runs `process-all-midi-files-in-dir!` for given `dir` if not empty."
   [dir]
   (if (seq dir)
-    (file/process-all-midi-files-in-dir! dir log-track-processing)
+    (file/process-all-midi-files-in-dir! dir logger-fn)
     (println "Please provide path to directory containing midi files!")))
