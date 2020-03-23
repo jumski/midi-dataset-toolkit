@@ -15,15 +15,32 @@
     (filter note-on?)
     (map #(select-keys % [:timestamp :note]))))
 
+(defn- print-error
+  "Prints info about midifile path and error message catched."
+  [midifile e]
+  (println "class" (class midifile))
+  (let [msg (format "Loading '%s' raised error '%s' with message '%s'"
+                    (.getPath midifile)
+                    (str (class e))
+                    (.getMessage e))]
+    (println msg)))
+
 ; Public
 
 (defn load-tracks
   "Returns sequence of Track's for given midifile at path
-  Skips any tracks that does not have any note-ons."
-  [midifile]
-  (let [path (.getPath midifile)
-        {tracks :tracks} (overtone.midi.file/midi-file path)]
-    (for [[index {events :events}] (map-indexed list tracks)
-          :when (some note-on? events)]
-      {:index index :path path :note-ons (sequence only-note-ons events)})))
+  Skips any tracks that does not have any note-ons.
+  Logs errors to screen by default but accepts custom logger function."
+  ([midifile] (load-tracks midifile print-error))
+  ([midifile error-fn]
+   (try
+     (let [path (.getPath midifile)
+           {tracks :tracks} (overtone.midi.file/midi-file path)]
+       (for [[index {events :events}] (map-indexed list tracks)
+             :when (some note-on? events)]
+         {:index index :path path :note-ons (sequence only-note-ons events)}))
+     (catch Exception e
+       (do
+         (error-fn midifile e)
+         [{:error e}])))))
 
