@@ -15,4 +15,9 @@
   (fact
     "processes simple chord progression"
     (load-trimmed-fixture :real-midis "c_major_chord_4th_octave_60_64_67.mid.part_01.steps")
-    => (load-trimmed-fixture :real-midis "c_major_chord_4th_octave_60_64_67.mid.part_01.expected")))
+    => (load-trimmed-fixture :real-midis "c_major_chord_4th_octave_60_64_67.mid.part_01.expected"))
+
+  (fact
+    "processes files that needs quantization"
+    (load-trimmed-fixture :real-midis "to_be_quantized.mid.part_01.steps")
+    => (load-trimmed-fixture :real-midis "to_be_quantized.mid.part_01.expected")))

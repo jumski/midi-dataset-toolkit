@@ -49,7 +49,7 @@
 
 (defn quantize-track [track]
   "Quantizes all `note-ons` :timestamp for given track."
-  (let [q-fn #(quantize 100 %)
+  (let [q-fn #(quantize 15 %) ; 15 should be 1/32
         note-on-fn #(update % :timestamp q-fn)]
     (update track :note-ons (partial map note-on-fn))))
 
