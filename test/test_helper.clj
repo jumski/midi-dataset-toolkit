@@ -32,12 +32,11 @@
   (-> (apply load-fixture path-parts)
       clojure.string/trim))
 
-(defn clean-fixture-dir
+(defn clean-fixture-dir!
   "Removes all *.steps files in dir."
   [dirname]
   (let [dir (fixture-path dirname)
         patt #"(?i).*\.steps$"]
     (doseq [f (find-files-by-pattern dir patt)]
-      (println "deleting" (.getPath f))
       (.delete f))))
 
