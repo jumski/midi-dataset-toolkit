@@ -5,8 +5,8 @@
 (defn- logger-fn
   "Prints info about processing given track."
   [{:keys [index path]}]
-  (do
-    (println "Saving track" index "from" path)))
+  (if-not (or (nil? index) (nil? path))
+    (println "Saved: track" index "from" path)))
 
 (defn -main
   "Runs `process-all-midi-files-in-dir!` for given `dir` if not empty."
