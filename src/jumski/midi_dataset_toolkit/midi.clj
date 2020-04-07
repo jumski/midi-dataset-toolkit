@@ -1,5 +1,6 @@
 (ns jumski.midi-dataset-toolkit.midi
-  (:require [overtone.midi.file]))
+  (:require [overtone.midi.file])
+  (:import java.io.File))
 
 ; Helpers
 
@@ -17,12 +18,11 @@
 
 (defn- print-error
   "Prints info about midifile path and error message catched."
-  [midifile e]
-  (println "class" (class midifile))
-  (let [msg (format "Loading '%s' raised error '%s' with message '%s'"
+  [^java.io.File midifile e]
+  (let [msg (format "Error: loading '%s' raised error '%s' with message '%s'"
                     (.getPath midifile)
                     (str (class e))
-                    (.getMessage e))]
+                    (.getMessage ^java.lang.Exception e))]
     (println msg)))
 
 ; Public
@@ -32,7 +32,7 @@
   Skips any tracks that does not have any note-ons.
   Logs errors to screen by default but accepts custom logger function."
   ([midifile] (load-tracks midifile print-error))
-  ([midifile error-fn]
+  ([^java.io.File midifile error-fn]
    (try
      (let [path (.getPath midifile)
            {tracks :tracks} (overtone.midi.file/midi-file path)]

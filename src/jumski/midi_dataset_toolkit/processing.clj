@@ -1,13 +1,14 @@
 (ns jumski.midi-dataset-toolkit.processing
-  (:require [jumski.midi-dataset-toolkit.midi :as midi]))
+  (:require [jumski.midi-dataset-toolkit.midi :as midi])
+  (:import java.io.File))
 
 ;; Helpers
 
 (def ^:private only-midi-files
   "Transducer, filtering only paths to midi files, based on extension."
   (let [midifile-regex #"(?i).*\.midi?$"]
-    (comp (filter #(.isFile %))
-          (filter #(re-matches midifile-regex (.getPath %))))))
+    (comp (filter #(.isFile ^java.io.File %))
+          (filter #(re-matches midifile-regex (.getPath ^java.io.File %))))))
 
 (defn- notes-to-bitmask
   "Returns 128-chars long string of 0s and 1s, representing all possible notes
