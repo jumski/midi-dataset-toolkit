@@ -3,6 +3,8 @@
             [test-helper :refer [clean-fixture-dir! fixture-path load-trimmed-fixture]]
             [jumski.midi-dataset-toolkit.file :as file]))
 
+(set! *warn-on-reflection* true)
+
 (with-state-changes
   [(before :contents (do
                     (clean-fixture-dir! :real-midis)

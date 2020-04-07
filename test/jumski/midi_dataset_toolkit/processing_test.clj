@@ -2,6 +2,8 @@
   (:require [midje.sweet :refer :all]
             [jumski.midi-dataset-toolkit.processing :as processing]))
 
+(set! *warn-on-reflection* true)
+
 (fact
   "quantize-track aligns :timestamp of each note to grid"
   (let [track {:index 0
@@ -12,8 +14,8 @@
     (sequence (map processing/quantize-track) [track])
     => [{:index 0
          :path "some/path"
-         :note-ons [{:timestamp 0   :note 49}
-                    {:timestamp 100 :note 50}]}]))
+         :note-ons [{:timestamp 45   :note 49}
+                    {:timestamp 45 :note 50}]}]))
 
 (fact
   "steppize-track groups notes by :timestamp and sorts the groups"
